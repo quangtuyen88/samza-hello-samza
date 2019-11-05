@@ -20,6 +20,7 @@
 package samza.examples.wikipedia.system;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -202,7 +203,7 @@ public class WikipediaFeed {
     void onEvent(WikipediaFeedEvent event);
   }
 
-  public static final class WikipediaFeedEvent {
+  public static final class WikipediaFeedEvent implements Serializable {
     private final long time;
     private final String channel;
     private final String source;

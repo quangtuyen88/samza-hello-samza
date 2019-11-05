@@ -41,6 +41,10 @@
   </fileSets>
   <files>
     <file>
+      <source>${basedir}/src/main/resources/log4j2.xml</source>
+      <outputDirectory>lib</outputDirectory>
+    </file>
+    <file>
       <source>${basedir}/src/main/resources/log4j.xml</source>
       <outputDirectory>lib</outputDirectory>
     </file>

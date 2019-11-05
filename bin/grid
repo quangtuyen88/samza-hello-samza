@@ -83,8 +83,8 @@ install_samza() {
   mkdir -p "$DEPLOY_ROOT_DIR"
   if [ -d "$DOWNLOAD_CACHE_DIR/samza/.git" ]; then
     pushd "$DOWNLOAD_CACHE_DIR/samza"
-    git fetch origin
-    git reset --hard origin/master
+    #git fetch origin
+    #git reset --hard origin/master
   else
     mkdir -p $DOWNLOAD_CACHE_DIR
     pushd $DOWNLOAD_CACHE_DIR

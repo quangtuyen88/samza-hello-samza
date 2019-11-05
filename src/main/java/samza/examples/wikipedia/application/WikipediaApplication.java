@@ -27,13 +27,17 @@ import org.apache.samza.application.descriptors.StreamApplicationDescriptor;
 import org.apache.samza.context.Context;
 import org.apache.samza.context.TaskContext;
 import org.apache.samza.metrics.Counter;
+import org.apache.samza.operators.KV;
 import org.apache.samza.operators.MessageStream;
 import org.apache.samza.operators.OutputStream;
 import org.apache.samza.operators.functions.FoldLeftFunction;
 import org.apache.samza.operators.windows.WindowPane;
 import org.apache.samza.operators.windows.Windows;
 import org.apache.samza.serializers.JsonSerdeV2;
+import org.apache.samza.serializers.KVSerde;
 import org.apache.samza.serializers.Serde;
+import org.apache.samza.serializers.SerializableSerde;
+import org.apache.samza.serializers.StringSerde;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
@@ -137,7 +141,12 @@ public class WikipediaApplication implements StreamApplication, Serializable {
 
     // Parse, update stats, prepare output, and send
     allWikipediaEvents
-        .map(WikipediaParser::parseEvent)
+        .partitionBy(
+            wikipediaFeedEvent -> String.valueOf(wikipediaFeedEvent.getTime()), // key extractor
+            wikipediaFeedEvent -> wikipediaFeedEvent, // value extractor
+            KVSerde.of(new StringSerde(), new SerializableSerde<>()), // serdes
+            "map")
+        .map(message -> WikipediaParser.parseEvent(message.getValue()))
         .window(Windows.tumblingWindow(windowDuration,
             WikipediaStats::new, new WikipediaStatsAggregator(), WikipediaStats.serde()), "statsWindow")
         .map(this::formatOutput)
